@@ -1,0 +1,27 @@
+body {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  font-family: 'Slabo 27px', serif;
+}
+
+.header {
+  background-color: #ffb380;
+  text-align: center;
+}
+
+
+.fullmap {
+  width: 75%;
+  height: 600px;
+  overflow: hidden;
+  float: right;
+}
+
+.destinations {
+  width: 25%;
+  float: left;
+  overflow: hidden;
+  background-color: #99ccff;
+  height: 600px;
+}
