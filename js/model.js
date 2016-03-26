@@ -105,7 +105,6 @@ var createInfo = function (data, map) {
         		'<h3> Address: ' + results.businesses[0].location.display_address + '</h3>' +
                 '</div>';
             infowindow.setContent(contentString);
-            infowindow.open(map, data.marker);
     	    },
 	        fail: function() {
 			console.log('Yelp API Epic FAIL');
@@ -138,6 +137,7 @@ var viewModel = function() {
 			google.maps.event.addListener(marker, 'click', function() {
 				map.panTo(marker.position);
 				createInfo(data, map);
+				infowindow.open(map, marker);
 			});
 		});
 	};
