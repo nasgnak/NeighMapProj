@@ -35,14 +35,14 @@
 	                        <th>Name</th>
         	            </tr>
             	    </thead>
-	                <tbody data-bind="foreach: viewModel.searchInfo">
+	                <tbody data-bind="foreach: searchInfo">
     	                <tr>
         	                <td data-bind="text: realName"></td>
 	                    </tr>
     	            </tbody>
         	    </table>
             </div>
-	    	<div id="map" class="col-xs-12 col-sm-7 col-md-9">
+	    	<div id="map" class="col-xs-12 col-sm-7 col-md-9 fullmap">
 	    	</div>
 	    </div>
 	</div>
@@ -51,7 +51,7 @@
 	<script src='js/knockout.js'></script>
 	<script src='js/jquery-2.2.2.min.js'></script>
 	<script src="js/model.js"></script>
-	<script async defer src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDviP9VJgS75UdI0oRZUI1Z2HyX49pKb8E&libraries=places%26callback=initMap"></script>
+	<script async defer src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDviP9VJgS75UdI0oRZUI1Z2HyX49pKb8E&libraries=places&callback=initMap" onerror="googleError()"></script>
 
 </body>
 </html>
