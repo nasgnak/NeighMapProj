@@ -1,67 +1,57 @@
-var initialLocations = [
-	{
+var initialLocations = [{
     realName: "Google",
     realAddress: "340 Main St",
     realCity: "Venice, CA 90291",
     lat: "33.991292",
     lng: "-118.4868472"
-	}, 
-	{
+}, {
     realName: "Blue Star Donuts",
     realAddress: "1142 Abbot Kinney Blvd.",
     realCity: "Los Angeles, CA 90291",
     lat: "33.9912933",
     lng: "-118.4715263"
-	},
-	{
+}, {
     realName: "Ramen Yamadaya",
     realAddress: "3118 W. 182nd St.",
     realCity: "Torrance, CA 90504",
     lat: "33.8653053",
     lng: "-118.329391"
-	},
-	{
+}, {
     realName: "Del Amo Fashion Center",
     realAddress: "3525 W. Carson St.",
     realCity: "Torrance, CA 90503",
     lat: "33.8332536",
     lng: "-118.3511273"
-	},
-	{
+}, {
     realName: "Los Angeles International Airport",
     realAddress: "1 World Way",
     realCity: "Los Angeles, CA 90045",
     lat: "33.9415889",
     lng: "-118.4107187"
-	}
-	];
+}];
 
-//Call the map once, with an assist from @abigail in the forums for the error message set up.
+
 var map, infowindow, marker;
 
+//This is in reference to the onerror call in the Google Maps API script. Thanks to whomever graded my code for the tip!
+function googleError() {
+    alert("Google Maps has failed to load at this time.");
+};
+
+//I moved the ko.applyBindings here to ensure that my viewModel will be called only after my map has been instantiated. 
 function initMap() {
-    try {
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: {
+            lat: 33.9290331,
+            lng: -118.3740959
+        },
+        zoom: 11,
+        scaleControl: true
+    });
 
-        map = new google.maps.Map(document.getElementById('map'), {
-            center: {
-                lat: 33.9290331,
-                lng: -118.3740959
-            },
-            zoom: 11,
-            scaleControl: true
-        });
-
-    } catch (error) {
-
-        var errorMessage = 'Oops! Cannot connect to Google Maps at this time.';
-        console.log(errorMessage);
-
-    }
-    
     ko.applyBindings(new viewModel());
 }
 
-initMap();
 
 
 //Integrate Yelp API. Credit to @MarkN. Added from source https://github.com/bettiolo/oauth-signature-js to help with the oauth.
@@ -111,15 +101,16 @@ var createInfo = function(data, map) {
                 '<p> Address: ' + results.businesses[0].location.display_address + '</p>' +
                 '</div>';
             infowindow.setContent(contentString);
+            infowindow.open(map, data.marker);
             clearTimeout(yelpTimeout);
         },
     };
-	
-	//Create an error message should the Yelp API fail to succeed.
-	var yelpTimeout = setTimeout(function(){
-		$contentString.text("Failed to get Yelp API response!");
-	}, 8000);
-	
+
+    //Create an error message should the Yelp API fail to succeed.
+    var yelpTimeout = setTimeout(function() {
+        $contentString.text("Failed to get Yelp API response!");
+    }, 8000);
+
     // Send AJAX query via jQuery library.
     $.ajax(settings);
 };
@@ -132,26 +123,26 @@ var viewModel = function() {
 
     //Create markers for each location in the array. Assist from @kfmahre.
     this.markers = function() {
-    	
-    	//Create a toggleBounce function to add animation when a marker is clicked.
-    	function toggleBounce() {
-  			if (marker.getAnimation() !== null) {
-    			marker.setAnimation(null);
-			  	} else {
-    			marker.setAnimation(google.maps.Animation.BOUNCE);
-    			setTimeout("marker.setAnimation(null)", 1500);
-  			}
-  		}
 
-		initialLocations.forEach(function(data){
-			that.searchInfo().push(data.realName, data.lat, data.lng)
-		});
-		console.log(that.searchInfo());
-		
-		for (var i = 0; i < that.searchInfo().length; i++) {
+        //Create a toggleBounce function to add animation when a marker is clicked.
+        function toggleBounce() {
+            if (marker.getAnimation() !== null) {
+                marker.setAnimation(null);
+            } else {
+                marker.setAnimation(google.maps.Animation.BOUNCE);
+                setTimeout("marker.setAnimation(null)", 1500);
+            }
+        }
 
-			var currentMarker = that.searchInfo()[i];
-			
+        initialLocations.forEach(function(data) {
+            that.searchInfo().push(data)
+        });
+
+
+        for (var i = 0; i < that.searchInfo().length; i++) {
+
+            var currentMarker = that.searchInfo()[i];
+
             marker = new google.maps.Marker({
                 map: map,
                 position: new google.maps.LatLng(that.searchInfo()[i].lat, that.searchInfo()[i].lng),
@@ -163,16 +154,15 @@ var viewModel = function() {
             marker.addListener('click', function(data) {
                 map.panTo(marker.position);
                 toggleBounce();
-                createInfo(data, map);
-                infowindow.open(map, data.marker);
+                createInfo(currentMarker, map);
+
             });
-            that.searchInfo().push(marker);
+            that.searchInfo()[i].marker = marker;
         };
 
 
         that.filterResults = function() {
             var searchInput = that.search().toLowerCase();
-            that.searchInfo.removeAll();
             that.searchInfo().forEach(function(data) {
                 data.marker.setVisible(false);
                 if (data.realName.toLowerCase().indexOf(searchInput) !== -1) {
