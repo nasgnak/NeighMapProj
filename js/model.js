@@ -133,7 +133,13 @@ var viewModel = function() {
                 setTimeout("marker.setAnimation(null)", 1500);
             }
         }
-
+		
+		var bounceMarker = function(marker){
+			return function (){
+				toggleBounce(marker);
+			}
+		}
+		
         initialLocations.forEach(function(data) {
             that.searchInfo().push(data)
         });
@@ -148,15 +154,14 @@ var viewModel = function() {
                 title: that.searchInfo().realName,
                 animation: google.maps.Animation.DROP
             });
-			google.maps.event.addListener(marker,'click',function() {
-				toggleBounce(marker);
-			});
+
+			google.maps.event.addListener( marker, 'click', bounceMarker(marker));
             //Establish an event for when the marker is clicked, the marker and var i will be set as parameters,
             //and execute the panTo, toggleBounce, and createInfo function.
             marker.addListener('click', function(marker, i) {
                 return function(){ 
                 	map.panTo(marker.position);
-                	//toggleBounce();
+                	//bounceMarker(marker);
                 	createInfo(that.searchInfo()[i], map);
                 }
 
