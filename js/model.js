@@ -129,7 +129,7 @@ var viewModel = function() {
             if (marker.getAnimation() !== null) {
                 marker.setAnimation(null);
             } else {
-                arker.setAnimation(google.maps.Animation.BOUNCE);
+                marker.setAnimation(google.maps.Animation.BOUNCE);
                 setTimeout("marker.setAnimation(null)", 1500);
             }
         }
@@ -137,7 +137,6 @@ var viewModel = function() {
         initialLocations.forEach(function(data) {
             that.searchInfo().push(data)
         });
-
 
         for (var i = 0; i < that.searchInfo().length; i++) {
 
@@ -149,30 +148,24 @@ var viewModel = function() {
                 title: that.searchInfo().realName,
                 animation: google.maps.Animation.DROP
             });
+			google.maps.event.addListener(marker,'click',function() {
+				toggleBounce(marker);
+			});
+            //Establish an event for when the marker is clicked, the marker and var i will be set as parameters,
+            //and execute the panTo, toggleBounce, and createInfo function.
+            marker.addListener('click', function(marker, i) {
+                return function(){ 
+                	map.panTo(marker.position);
+                	//toggleBounce();
+                	createInfo(that.searchInfo()[i], map);
+                }
 
-            //Establish an event for when the marker is clicked, open the info window on the map, using the marker as location of where the info window will open.
-            marker.addListener('click', function(data) {
-                map.panTo(marker.position);
-                toggleBounce();
-                createInfo(currentMarker, map);
-
-            });
+            }(marker, i));
             that.searchInfo()[i].marker = marker;
         };
 
 
-        that.filterResults = function() {
-            var searchInput = that.search().toLowerCase();
-            that.searchInfo().forEach(function(data) {
-                data.marker.setVisible(false);
-                if (data.realName.toLowerCase().indexOf(searchInput) !== -1) {
-                    that.searchInfo.push(data);
-                }
-            });
-            that.searchInfo().forEach(function(data) {
-                data.marker.setVisible(true);
-            });
-        };
+        //insert filtering code here
 
 
     };
