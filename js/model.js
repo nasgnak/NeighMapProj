@@ -154,7 +154,7 @@ var viewModel = function() {
             //Establish an event for when the marker is clicked, open the info window on the map, using the marker as location of where the info window will open.
             marker.addListener('click', function(data) {
                 map.panTo(marker.position);
-                toggleBounce();
+                toggleBounce(marker);
                 createInfo(currentMarker, map);
 
             });
