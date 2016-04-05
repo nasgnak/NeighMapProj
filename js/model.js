@@ -125,13 +125,12 @@ var viewModel = function() {
     this.markers = function() {
 
         //Create a toggleBounce function to add animation when a marker is clicked.
-        function toggleBounce(marker) {
-        	var self = this;
-            if (self.marker.getAnimation() !== null) {
-                self.marker.setAnimation(null);
+        function toggleBounce() {
+            if (marker.getAnimation() !== null) {
+                marker.setAnimation(null);
             } else {
-                self.marker.setAnimation(google.maps.Animation.BOUNCE);
-                setTimeout("self.marker.setAnimation(null)", 1500);
+                arker.setAnimation(google.maps.Animation.BOUNCE);
+                setTimeout("marker.setAnimation(null)", 1500);
             }
         }
 
@@ -154,7 +153,7 @@ var viewModel = function() {
             //Establish an event for when the marker is clicked, open the info window on the map, using the marker as location of where the info window will open.
             marker.addListener('click', function(data) {
                 map.panTo(marker.position);
-                toggleBounce(marker);
+                toggleBounce();
                 createInfo(currentMarker, map);
 
             });
