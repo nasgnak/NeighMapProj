@@ -125,12 +125,13 @@ var viewModel = function() {
     this.markers = function() {
 
         //Create a toggleBounce function to add animation when a marker is clicked.
-        function toggleBounce() {
-            if (marker.getAnimation() !== null) {
-                marker.setAnimation(null);
+        function toggleBounce(marker) {
+        	var self = this;
+            if (self.marker.getAnimation() !== null) {
+                self.marker.setAnimation(null);
             } else {
-                marker.setAnimation(google.maps.Animation.BOUNCE);
-                setTimeout("marker.setAnimation(null)", 1500);
+                self.marker.setAnimation(google.maps.Animation.BOUNCE);
+                setTimeout("self.marker.setAnimation(null)", 1500);
             }
         }
 
