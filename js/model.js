@@ -1,3 +1,4 @@
+"use strict";
 var initialLocations = [{
     realName: "Google",
     realAddress: "340 Main St",
@@ -108,11 +109,19 @@ var createInfo = function(data, map) {
 
     //Create an error message should the Yelp API fail to succeed.
     var yelpTimeout = setTimeout(function() {
-        $contentString.text("Failed to get Yelp API response!");
+        alert("Failed to get Yelp API response!");
     }, 8000);
 
     // Send AJAX query via jQuery library.
     $.ajax(settings);
+};
+
+//Help from @kkl with establishing a ko.util that will recognize what the string of text starts with in filteredItems.
+//https://discussions.udacity.com/t/knockout-js-filter-utility-error-uncaught-typeerror-location-name-is-not-a-function/15504/4
+ko.utils.stringStartsWith = function(string, startsWith) {
+    string = string || "";
+    if (startsWith.length > string.length) return false;
+    return string.substring(0, startsWith.length) === startsWith;
 };
 
 var viewModel = function() {
@@ -121,27 +130,47 @@ var viewModel = function() {
     that.searchInfo = ko.observableArray();
     that.search = ko.observable("");
 
+    //Create a listClick function to bind the text of the location name to its marker.
+    this.listClick = function(data) {
+        google.maps.event.trigger(data.marker, 'click');
+        console.log(data);
+    };
+
+    //Function to match what the user inputs to the list of locations.
+    this.filteredItems = ko.computed(function() {
+        var filter = that.search().toLowerCase();
+        if (!filter) {
+            return that.searchInfo();
+            
+        } else {
+            return ko.utils.arrayFilter(that.searchInfo(), function(item) {
+                //return ko.utils.stringStartsWith(item.realName.toLowerCase(), filter);
+				if (item.realName.toLowerCase().indexOf(that.search().toLowerCase()) >= 0) {
+					item.marker.setVisible(true);
+					return true;
+				} else {
+					item.marker.setVisible(false);
+					return false;
+				}
+            });
+        }
+    }, that.searchInfo());
+
+
     //Create markers for each location in the array. Assist from @kfmahre.
     this.markers = function() {
 
         //Create a toggleBounce function to add animation when a marker is clicked.
-        function toggleBounce() {
-            if (marker.getAnimation() !== null) {
-                marker.setAnimation(null);
-            } else {
-                marker.setAnimation(google.maps.Animation.BOUNCE);
-                setTimeout("marker.setAnimation(null)", 1500);
-            }
+        function toggleBounce(marker) {
+           marker.setAnimation(google.maps.Animation.BOUNCE);
+           setTimeout(function() {
+           		marker.setAnimation(null);		
+           }, 1500);
         }
-		
-		var bounceMarker = function(marker){
-			return function (){
-				toggleBounce(marker);
-			}
-		}
-		
+
+
         initialLocations.forEach(function(data) {
-            that.searchInfo().push(data)
+            that.searchInfo().push(data);
         });
 
         for (var i = 0; i < that.searchInfo().length; i++) {
@@ -155,22 +184,19 @@ var viewModel = function() {
                 animation: google.maps.Animation.DROP
             });
 
-			google.maps.event.addListener( marker, 'click', bounceMarker(marker));
+
             //Establish an event for when the marker is clicked, the marker and var i will be set as parameters,
             //and execute the panTo, toggleBounce, and createInfo function.
             marker.addListener('click', function(marker, i) {
-                return function(){ 
-                	map.panTo(marker.position);
-                	//bounceMarker(marker);
-                	createInfo(that.searchInfo()[i], map);
+                return function() {
+                    map.panTo(marker.position);
+                    toggleBounce(marker);
+                    createInfo(that.searchInfo()[i], map);
                 }
 
             }(marker, i));
             that.searchInfo()[i].marker = marker;
         };
-
-
-        //insert filtering code here
 
 
     };
