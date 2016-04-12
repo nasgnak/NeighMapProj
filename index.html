@@ -12,46 +12,41 @@
 </head>
 
 <body>
-	<div class="container-fluid">
-   		<div class="row header">
-   			<div class="col-xs-12 col-sm-6 col-md-8">
-   		 		<form>
-					<br><input type="search" placeholder="Filter by typing name of business here!" class="search"
-					data-bind="textInput: search, event: {keyup: filterResults()}">
-    	 	    </form>
-   			</div>
-        	<div class="col-xs-6 col-md-4">
-        		<h1>TravelAide</h1>
-        		<p>What's a Thomas Guide?</p>
-        	</div>
-    	</div>
-
-    	<div class="row">
-        	<div class="col-xs-5 col-md-3 destinations">
-	            <h3>Places Around L.A.</h3>
-    	        <table>
-        	        <thead>
-            	        <tr>
-	                        <th>Name</th>
-        	            </tr>
-            	    </thead>
-	                <tbody data-bind="foreach: searchInfo">
-    	                <tr>
-        	                <td data-bind="text: realName"></td>
-	                    </tr>
-    	            </tbody>
-        	    </table>
+    <div class="container-fluid">
+        <div class="row header">
+            <div class="col-xs-12 col-sm-6 col-md-8">
+                <form>
+                    <br>
+                    <input type="search" placeholder="Filter by typing name of business here!" class="search" data-bind="textInput: search, valueUpdate: 'keyup' ">
+                </form>
             </div>
-	    	<div id="map" class="col-xs-12 col-sm-7 col-md-9 fullmap">
-	    	</div>
-	    </div>
-	</div>
-    
-	<script src="lib/oauth-signature/dist/oauth-signature.js"></script>
-	<script src='js/knockout.js'></script>
-	<script src='js/jquery-2.2.2.min.js'></script>
-	<script src="js/model.js"></script>
-	<script async defer src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDviP9VJgS75UdI0oRZUI1Z2HyX49pKb8E&libraries=places&callback=initMap" onerror="googleError()"></script>
+            <div class="col-xs-6 col-md-4">
+                <h1>TravelAide</h1>
+                <p>What's a Thomas Guide?</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-sm-5 col-md-3 destinations">
+                <h3>Places Around L.A.</h3>
+                <ul data-bind="foreach: filteredItems">
+                    <li>
+                        <span data-bind="text: realName, click:$parent.listClick"></span>
+                        <br>
+                    </li>
+                </ul>
+            </div>
+            <div id="map" class="col-xs-7 col-sm-7 col-md-9 fullmap">
+            </div>
+        </div>
+    </div>
+
+    <script src="lib/oauth-signature/dist/oauth-signature.js"></script>
+    <script src='js/knockout.js'></script>
+    <script src='js/jquery-2.2.2.min.js'></script>
+    <script src="js/model.js"></script>
+    <script async defer src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDviP9VJgS75UdI0oRZUI1Z2HyX49pKb8E&libraries=places&callback=initMap" onerror="googleError()"></script>
 
 </body>
+
 </html>
