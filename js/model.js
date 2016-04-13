@@ -118,11 +118,11 @@ var createInfo = function(data, map) {
 
 //Help from @kkl with establishing a ko.util that will recognize what the string of text starts with in filteredItems.
 //https://discussions.udacity.com/t/knockout-js-filter-utility-error-uncaught-typeerror-location-name-is-not-a-function/15504/4
-ko.utils.stringStartsWith = function(string, startsWith) {
+/*ko.utils.stringStartsWith = function(string, startsWith) {
     string = string || "";
     if (startsWith.length > string.length) return false;
     return string.substring(0, startsWith.length) === startsWith;
-};
+};*/
 
 var viewModel = function() {
     var that = this;
@@ -136,22 +136,28 @@ var viewModel = function() {
         console.log(data);
     };
 
+    this.resetMarkers = function() {
+        for (var i = 0; i < that.searchInfo().length; i++) {
+            that.searchInfo()[i].marker.setVisible(true);
+        }
+    };
+
     //Function to match what the user inputs to the list of locations.
     this.filteredItems = ko.computed(function() {
         var filter = that.search().toLowerCase();
         if (!filter) {
+            that.resetMarkers();
             return that.searchInfo();
-            
         } else {
+            that.resetMarkers();
             return ko.utils.arrayFilter(that.searchInfo(), function(item) {
-                //return ko.utils.stringStartsWith(item.realName.toLowerCase(), filter);
-				if (item.realName.toLowerCase().indexOf(that.search().toLowerCase()) >= 0) {
-					item.marker.setVisible(true);
-					return true;
-				} else {
-					item.marker.setVisible(false);
-					return false;
-				}
+                if (item.realName.toLowerCase().indexOf(that.search().toLowerCase()) >= 0) {
+                    item.marker.setVisible(true);
+                    return true;
+                } else {
+                    item.marker.setVisible(false);
+                    return false;
+                }
             });
         }
     }, that.searchInfo());
@@ -162,10 +168,10 @@ var viewModel = function() {
 
         //Create a toggleBounce function to add animation when a marker is clicked.
         function toggleBounce(marker) {
-           marker.setAnimation(google.maps.Animation.BOUNCE);
-           setTimeout(function() {
-           		marker.setAnimation(null);		
-           }, 1500);
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(function() {
+                marker.setAnimation(null);
+            }, 1500);
         }
 
 
